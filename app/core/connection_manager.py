@@ -40,9 +40,11 @@ class ConnectionManager:
         self.room_members[room_id].remove(user_id)
         self.socket_rooms[websocket].remove(room_id)
 
-        
+            
     async def broadcast_to_room(self, room_id, message):
         for user_id in self.room_members[room_id]:
-            for websocket in self.connections[user_id]:
-                await websocket.send_json(message) 
-
+            for websocket in list(self.connections[user_id]):
+                try:
+                    await websocket.send_json(message)
+                except:
+                    self.connections[user_id].remove(websocket)
