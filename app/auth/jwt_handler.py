@@ -1,8 +1,10 @@
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
-ALGORITHM = "HS256"
-SECRET_KEY = "1234"
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY = os.getenv("SECRET_KEY")
 def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
