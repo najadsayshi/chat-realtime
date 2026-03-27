@@ -7,12 +7,12 @@ from app.models.message import Message
 from app.websockets.endpoint import router, manager
 from app.core.redis_manager import RedisManager
 from app.routes.message import router as message_router
-
-
+from app.auth.routes import router as auth_router
 app = FastAPI()
 
 app.include_router(router)
 app.include_router(message_router)
+app.include_router(auth_router)
 
 redis_manager = RedisManager()
 

@@ -8,6 +8,7 @@ class ConnectionManager:
         self.socket_rooms = defaultdict(set) # {websocket : set of room_id}
 
     async def connect(self, user_id, websocket):
+        await websocket.accept() # accept connection in webscocket endpoint
         self.connections[user_id].add(websocket)
     async def disconnect(self, user_id, websocket):
         # remove this socket from user's connections
