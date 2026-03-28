@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session, select
 from app.models.db import engine
 from app.models.message import Message
+from app.models.user import User  # ✅ move here
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -28,8 +29,21 @@ def get_messages(
 
     messages = session.exec(query).all()
 
+    result = []
+
+    for msg in messages:
+        user = session.get(User, msg.user_id)
+
+        result.append({
+            "id": msg.id,
+            "user_id": msg.user_id,
+            "name": user.name,  # 🔥 FIX
+            "room_id": msg.room_id,
+            "content": msg.content,
+            "timestamp": str(msg.timestamp)
+        })
+
     return {
         "room_id": room_id,
-        "count": len(messages),
-        "messages": messages
+        "messages": result
     }

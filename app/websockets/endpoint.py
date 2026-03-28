@@ -1,4 +1,5 @@
 from fastapi import WebSocket, APIRouter, WebSocketDisconnect
+from sqlalchemy import event
 from sqlmodel import Session
 from app.core.connection_manager import ConnectionManager
 from app.core.redis_manager import RedisManager
@@ -94,17 +95,20 @@ async def handle_message(user_id, websocket, message):
         session.add(msg)
         session.commit()
         session.refresh(msg)
+        from app.models.user import User
 
+        user = session.get(User, user_id)
         # 🔥 Event
+        
         event = {
             "type": "MESSAGE",
             "id": msg.id,
+            "name"  : user.name,
             "user_id": msg.user_id,
             "room_id": msg.room_id,
             "content": msg.content,
             "timestamp": str(msg.timestamp)
         }
-
         # 🚀 Publish to Redis
         await redis_manager.publish(room_id, event)
 
