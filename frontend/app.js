@@ -18,7 +18,7 @@ const els = {
     goSignup: document.getElementById("go-to-signup"),
     goLogin: document.getElementById("go-to-login"),
     logoutBtn: document.getElementById("logout-btn"),
-    
+
     roomInput: document.getElementById("room-id-input"),
     joinBtn: document.getElementById("join-room-btn"),
     roomsList: document.getElementById("rooms-list"),
@@ -45,7 +45,7 @@ function init() {
 function showScreen(screen) {
     els.authScreen.classList.remove("active");
     els.chatScreen.classList.remove("active");
-    
+
     if (screen === "auth") els.authScreen.classList.add("active");
     if (screen === "chat") els.chatScreen.classList.add("active");
 }
@@ -55,7 +55,7 @@ function showToast(message, type = "info") {
     toast.className = `toast ${type}`;
     toast.textContent = message;
     els.toastContainer.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.remove();
     }, 3300);
@@ -69,7 +69,7 @@ function setupEventListeners() {
         els.loginForm.classList.add("slide-left");
         els.signupForm.classList.add("active");
     });
-    
+
     els.goLogin.addEventListener("click", (e) => {
         e.preventDefault();
         els.signupForm.classList.remove("active");
@@ -100,26 +100,26 @@ function setupEventListeners() {
     // Join Room
     els.joinBtn.addEventListener("click", () => {
         const roomId = parseInt(els.roomInput.value);
-        if(!roomId || isNaN(roomId)) return;
+        if (!roomId || isNaN(roomId)) return;
         els.roomInput.value = "";
         joinRoom(roomId);
     });
-    
+
     // Send Message
     els.messageForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const content = els.messageInput.value.trim();
-        if(!content || !socket || !activeRoom) {
-            if(!activeRoom) showToast("Select a room first", "error");
+        if (!content || !socket || !activeRoom) {
+            if (!activeRoom) showToast("Select a room first", "error");
             return;
         }
-        
+
         socket.send(JSON.stringify({
             type: "MESSAGE",
             room_id: activeRoom,
             content: content
         }));
-        
+
         els.messageInput.value = "";
     });
 }
@@ -132,9 +132,9 @@ async function login(email, password) {
             body: JSON.stringify({ email, password })
         });
         const data = await res.json();
-        
+
         if (!res.ok) throw new Error(data.detail || "Login failed");
-        
+
         token = data.access_token;
         localStorage.setItem("chat_token", token);
         showToast("Login successful!", "success");
@@ -152,9 +152,9 @@ async function signup(name, email, password) {
             body: JSON.stringify({ name, email, password })
         });
         const data = await res.json();
-        
+
         if (!res.ok) throw new Error(data.detail || "Signup failed");
-        
+
         showToast("Account created! Please log in.", "success");
         els.goLogin.click();
     } catch (err) {
@@ -185,15 +185,15 @@ function logout() {
 async function joinRoom(roomId) {
     activeRoom = roomId;
     els.activeRoomName.textContent = `Room ${roomId}`;
-    
-    if(!joinedRooms.has(roomId)) {
+
+    if (!joinedRooms.has(roomId)) {
         joinedRooms.add(roomId);
         renderRoomItem(roomId);
     }
-    
+
     document.querySelectorAll(".room-item").forEach(el => el.classList.remove("active"));
     const activeItem = document.getElementById(`room-item-${roomId}`);
-    if(activeItem) activeItem.classList.add("active");
+    if (activeItem) activeItem.classList.add("active");
 
     await loadMessages(roomId);
     connectWebSocket(roomId);
@@ -210,12 +210,12 @@ function renderRoomItem(roomId) {
 
 async function loadMessages(roomId) {
     try {
-        const res = await fetch(`${API_URL}/messages?room_id=${roomId}`);
+        const res = await fetch(`${API_URL}/messages/?room_id=${roomId}`);
         const data = await res.json();
-        
-        els.messagesContainer.innerHTML = ""; 
-        
-        if(!data.messages || data.messages.length === 0) {
+
+        els.messagesContainer.innerHTML = "";
+
+        if (!data.messages || data.messages.length === 0) {
             els.messagesContainer.innerHTML = `
                 <div class="empty-state">
                     <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1.5" fill="none" class="empty-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -227,30 +227,30 @@ async function loadMessages(roomId) {
 
         data.messages.forEach(msg => appendMessage(msg));
         scrollToBottom();
-    } catch(err) {
+    } catch (err) {
         showToast("Error loading messages", "error");
     }
 }
 
 function connectWebSocket(roomId) {
-    if(!socket || socket.readyState !== WebSocket.OPEN) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
         els.connStatus.textContent = "Connecting...";
         els.connStatus.classList.remove("connected");
-        
-        if(socket) socket.close();
-        
+
+        if (socket) socket.close();
+
         socket = new WebSocket(`${WS_URL}?token=${token}`);
-        
+
         socket.onopen = () => {
             els.connStatus.textContent = "Connected";
             els.connStatus.classList.add("connected");
-            
+
             socket.send(JSON.stringify({
                 type: "JOIN_ROOM",
                 room_id: roomId
             }));
         };
-        
+
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === "MESSAGE") {
@@ -262,12 +262,12 @@ function connectWebSocket(roomId) {
                 showToast(data.detail || "Error", "error");
             }
         };
-        
+
         socket.onclose = () => {
             els.connStatus.textContent = "Disconnected";
             els.connStatus.classList.remove("connected");
         };
-        
+
         socket.onerror = () => {
             showToast("Connection error", "error");
             els.connStatus.textContent = "Error";
@@ -286,26 +286,26 @@ function appendMessage(data) {
     if (emptyState) emptyState.remove();
 
     const div = document.createElement("div");
-    
+
     // Determine sender identity and parse token for own user ID
     let isMe = false;
     try {
-        if(token) {
+        if (token) {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            if(payload.user_id && String(data.user_id) === String(payload.user_id)) {
+            if (payload.user_id && String(data.user_id) === String(payload.user_id)) {
                 isMe = true;
             }
         }
-    } catch(e) {
+    } catch (e) {
         console.error("Token decode error", e);
     }
 
     const senderName = data.name || (data.user_id ? `User ${data.user_id}` : "Unknown");
     div.className = `message ${isMe ? 'msg-sent' : 'msg-recv'}`;
-    
+
     const senderEl = `<div class="msg-sender">${escapeHTML(senderName)}</div>`;
     const bubbleEl = `<div class="msg-bubble">${escapeHTML(data.content || JSON.stringify(data))}</div>`;
-    
+
     div.innerHTML = isMe ? bubbleEl : (senderEl + bubbleEl);
     els.messagesContainer.appendChild(div);
 }
