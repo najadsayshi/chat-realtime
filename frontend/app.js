@@ -225,7 +225,7 @@ async function loadMessages(roomId) {
             return;
         }
 
-        data.messages.forEach(msg => appendMessage(msg));
+        data.messages.reverse().forEach(msg => appendMessage(msg));
         scrollToBottom();
     } catch (err) {
         showToast("Error loading messages", "error");
