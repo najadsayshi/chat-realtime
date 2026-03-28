@@ -1,9 +1,9 @@
-# 💬 Real-Time Chat Backend (FastAPI + Redis + PostgreSQL)
+# 💬 Real-Time Chat App (FastAPI + Redis + PostgreSQL + Vanilla JS)
 
 ## 🚀 Overview
 
-A scalable real-time chat backend built using FastAPI, WebSockets, PostgreSQL, and Redis Pub/Sub.
-Supports multi-room messaging, authentication, persistence, and horizontal scaling.
+A scalable real-time chat application built using FastAPI, WebSockets, PostgreSQL, and Redis Pub/Sub.
+Features a premium Vanilla JS (Glassmorphism) frontend and supports multi-room messaging, authentication, persistence, and horizontal scaling.
 
 ---
 
@@ -16,12 +16,13 @@ Supports multi-room messaging, authentication, persistence, and horizontal scali
 * ⚡ Redis Pub/Sub for scalable message broadcasting
 * 📜 Message history API with pagination
 * 🧩 Event-driven architecture (JOIN_ROOM, LEAVE_ROOM, MESSAGE)
+* 🎨 Premium glassmorphism frontend (Vanilla HTML/CSS/JS)
 
 ---
 
 ## 🧠 Architecture
 
-Client → WebSocket → FastAPI
+Client (Vanilla JS) → WebSocket → FastAPI
       ↓
     Save Message (PostgreSQL)
       ↓
@@ -43,6 +44,7 @@ Client → WebSocket → FastAPI
 * PostgreSQL (Neon)
 * Redis
 * JWT Authentication
+* Vanilla HTML/CSS/JS (Frontend)
 
 ---
 
@@ -99,14 +101,28 @@ app/
 ├── main.py
 ```
 
+### 🎨 Frontend Structure
+
+```
+frontend/
+├── index.html
+├── styles.css
+└── app.js
+```
+
 ---
 
 ## ▶️ Run Locally
 
 ```bash
+# 1. Start the Backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
+
+### 2. Open the Frontend
+
+Simply open `frontend/index.html` in your favorite web browser!
 
 ---
 
