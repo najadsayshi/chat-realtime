@@ -2,6 +2,7 @@ services:
   - type: web
     name: chat-app
     env: python
+    plan: free # Ensures you use Render's free tier
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
@@ -19,4 +20,5 @@ services:
 
   - type: redis
     name: chat-redis
+    plan: free # Enjoy Render's 1 free managed Redis database
     ipAllowList: [] # Keep this internal only to Render for security
