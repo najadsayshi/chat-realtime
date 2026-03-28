@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 import asyncio
 from sqlmodel import SQLModel
 from app.models.db import engine
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve Frontend statically fallback (Must be after router definitions)
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 @app.on_event("startup")
 async def startup():
     print("🚀 STARTUP RUNNING")

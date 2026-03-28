@@ -1,7 +1,8 @@
 // app.js
-const API_URL = "http://localhost:8000";
-const WS_URL = "ws://localhost:8000/ws";
-
+const IS_PROD = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const API_URL = IS_PROD ? window.location.origin : "http://localhost:8000";
+const WS_SCHEME = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const WS_URL = IS_PROD ? `${WS_SCHEME}//${window.location.host}/ws` : "ws://localhost:8000/ws";
 // State
 let token = localStorage.getItem("chat_token") || "";
 let activeRoom = null;

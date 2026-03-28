@@ -5,7 +5,9 @@ class RedisManager:
     def __init__(self):
         
         self.channel = "room_messages"
-        self.redis = redis.Redis(host = "localhost",port = 6379, decode_responses=True)
+        import os
+        redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
+        self.redis = redis.from_url(redis_url, decode_responses=True)
     async def publish(self, room_id, message):
         event = {
             "room_id" : room_id,
